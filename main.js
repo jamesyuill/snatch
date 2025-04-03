@@ -1,13 +1,21 @@
 import * as d3 from 'https://cdn.jsdelivr.net/npm/d3@7/+esm';
 import Balls from './balls.js';
+import { io } from 'https://cdn.socket.io/4.8.1/socket.io.esm.min.js';
+
+const socket = io.connect('http://localhost:8080');
+socket.on('connect', () => {
+  console.log('connected');
+});
 
 const width = window.innerWidth;
 const height = window.innerHeight;
 const player1Color = 'yellow';
 const player2Color = 'red';
 const timeLimit = 20;
-let player1Name = 'test',
-  player2Name = 'potato';
+let players = {
+  player1: { id: '', name: '' },
+  player2: { id: '', name: '' },
+};
 
 //signup functionality
 let playerName = '';
@@ -23,6 +31,11 @@ submit.addEventListener('click', (e) => {
   if (playerName !== '') {
     signup.remove();
     wrapper.remove();
+    socket.emit('name-entered', playerName);
+    socket.on('setPlayers', (data) => {
+      players = data;
+      setPlayers(players);
+    });
   }
 });
 
@@ -61,22 +74,24 @@ const line = canvas
   .attr('stroke', 'black')
   .attr('stroke-width', 3);
 
-const player1 = canvas
-  .append('text')
-  .attr('x', 10)
-  .attr('y', 30)
-  .attr('font-size', 20)
-  .text(`player1: ${player1Name}`)
-  .attr('fill', 'black');
+function setPlayers(playerObj) {
+  canvas
+    .append('text')
+    .attr('x', 10)
+    .attr('y', 30)
+    .attr('font-size', 20)
+    .text(`player1: ${playerObj.player1.name}`)
+    .attr('fill', 'black');
 
-const player2 = canvas
-  .append('text')
-  .attr('x', width - 10)
-  .attr('y', 30)
-  .attr('font-size', 20)
-  .style('text-anchor', 'end')
-  .text(`player2: ${player2Name}`)
-  .attr('fill', 'black');
+  canvas
+    .append('text')
+    .attr('x', width - 10)
+    .attr('y', 30)
+    .attr('font-size', 20)
+    .style('text-anchor', 'end')
+    .text(`player2: ${playerObj.player2.name}`)
+    .attr('fill', 'black');
+}
 
 const timerDisplay = canvas
   .append('text')
