@@ -29,14 +29,16 @@ name.addEventListener('keyup', (e) => {
 submit.addEventListener('click', (e) => {
   //do something
   if (playerName !== '') {
-    signup.remove();
-    wrapper.remove();
+    signup.innerText = 'loading...';
     socket.emit('name-entered', playerName);
-    socket.on('setPlayers', (data) => {
-      players = data;
-      setPlayers(players);
-    });
   }
+});
+
+socket.on('setPlayers', (data) => {
+  signup.remove();
+  wrapper.remove();
+  players = data;
+  setPlayers(players);
 });
 
 const canvas = d3
@@ -104,11 +106,6 @@ const timerDisplay = canvas
   .style('text-anchor', 'middle')
   .text(timeLimit);
 
-function startGame(player1Balls, player2Balls) {
-  player1Balls.generateBalls();
-  player2Balls.generateBalls();
-}
-
 //start button
 canvas
   .append('text')
@@ -130,9 +127,19 @@ canvas
   })
   .on('click', () => {
     canvas.select('#startbtn').remove();
+
+    //fire off an event to start the game
+
+    //player ball locations will have to be the same so maybe generated on the server and passed to the canvas via a socket event
     startGame(player1Balls, player2Balls);
     timer();
   });
+
+function startGame(player1Balls, player2Balls) {
+  //pass the ball positions from socket event to the generate balls
+  player1Balls.generateBalls();
+  player2Balls.generateBalls();
+}
 
 //timer
 function timer() {
