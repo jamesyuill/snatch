@@ -9,6 +9,7 @@ export default class Balls {
     this.numOfBalls = 20;
     this.radius = 50;
     this.player = player;
+    this.active = true;
   }
 
   generateBalls() {
@@ -32,16 +33,20 @@ export default class Balls {
           d3
             .drag()
             .on('drag', (e) => {
-              this.canvas
-                .select(`#circle-${i}${this.player}`)
-                .attr('opacity', '0.5')
-                .attr('cx', e.x)
-                .attr('cy', e.y);
+              if (this.active) {
+                this.canvas
+                  .select(`#circle-${i}${this.player}`)
+                  .attr('opacity', '0.5')
+                  .attr('cx', e.x)
+                  .attr('cy', e.y);
+              }
             })
             .on('end', () => {
-              this.canvas
-                .select(`#circle-${i}${this.player}`)
-                .attr('opacity', '1');
+              if (this.active) {
+                this.canvas
+                  .select(`#circle-${i}${this.player}`)
+                  .attr('opacity', '1');
+              }
             })
         );
     }
@@ -49,6 +54,8 @@ export default class Balls {
 
   checkBalls() {
     let playerScore = 0;
+
+    //total balls of one colour minus the score gives them how many are still remaining
 
     for (let i = 0; i < this.numOfBalls; i++) {
       let ball = this.canvas.select(`#circle-${i}${this.player}`).node();
@@ -65,6 +72,7 @@ export default class Balls {
         }
       }
     }
-    return playerScore;
+    let remainder = this.numOfBalls - playerScore;
+    return remainder;
   }
 }

@@ -6,8 +6,7 @@ const height = window.innerHeight;
 const player1Color = 'yellow';
 const player2Color = 'red';
 const timeLimit = 20;
-let player1Name = 'test',
-  player2Name = 'potato';
+let player = 'test';
 
 //signup functionality
 let playerName = '';
@@ -22,7 +21,8 @@ submit.addEventListener('click', (e) => {
   //do something
   if (playerName !== '') {
     signup.remove();
-    wrapper.remove();
+    wrapper.style.display = 'none';
+    setPlayer();
   }
 });
 
@@ -61,22 +61,24 @@ const line = canvas
   .attr('stroke', 'black')
   .attr('stroke-width', 3);
 
-const player1 = canvas
-  .append('text')
-  .attr('x', 10)
-  .attr('y', 30)
-  .attr('font-size', 20)
-  .text(`player1: ${player1Name}`)
-  .attr('fill', 'black');
+function setPlayer() {
+  const player1 = canvas
+    .append('text')
+    .attr('x', 10)
+    .attr('y', 30)
+    .attr('font-size', 20)
+    .text(`player: ${playerName}`)
+    .attr('fill', 'black');
+}
 
-const player2 = canvas
-  .append('text')
-  .attr('x', width - 10)
-  .attr('y', 30)
-  .attr('font-size', 20)
-  .style('text-anchor', 'end')
-  .text(`player2: ${player2Name}`)
-  .attr('fill', 'black');
+// const player2 = canvas
+//   .append('text')
+//   .attr('x', width - 10)
+//   .attr('y', 30)
+//   .attr('font-size', 20)
+//   .style('text-anchor', 'end')
+//   .text(`player2: ${player2Name}`)
+//   .attr('fill', 'black');
 
 const timerDisplay = canvas
   .append('text')
@@ -129,6 +131,8 @@ function timer() {
       canvas.select('#timerdisplay').text(counter);
     } else {
       clearInterval(tickDown);
+      player1Balls.active = false;
+      player2Balls.active = false;
       checkScores();
     }
   }, 1000);
@@ -137,35 +141,50 @@ function timer() {
 //gameRunning
 
 function checkScores() {
-  const player1Score = player1Balls.checkBalls();
-  const player2Score = player2Balls.checkBalls();
-  console.log(player1Score, player2Score);
-  displayScores(player1Score, player2Score);
+  const yellowRemainder = player1Balls.checkBalls();
+  const redRemainder = player2Balls.checkBalls();
+  let leftOverBalls = yellowRemainder + redRemainder;
+  displayScores(leftOverBalls);
 }
 
-function displayScores(player1Score, player2Score) {
+function displayScores(playerScore) {
   let boxWidth = width / 3;
   let boxHeight = height / 4;
 
-  let group = canvas
-    .append('g')
-    .attr(
-      'transform',
-      `translate(${width / 2 - boxWidth / 2} ${height / 2 - boxHeight / 2})`
-    );
+  wrapper.style.display = 'flex';
 
-  group
-    .append('rect')
-    .attr('x', 0)
-    .attr('y', 0)
-    .attr('width', boxWidth)
-    .attr('height', boxHeight)
-    .attr('fill', 'white');
+  let endModal = document.createElement('div');
+  endModal.setAttribute('class', 'endgamemodal');
+  endModal.innerText = `${playerName}! ${
+    playerScore === 0
+      ? `you got them all!`
+      : `you missed: ${playerScore} balls!`
+  }`;
+  wrapper.appendChild(endModal);
 
-  group
-    .append('text')
-    .attr('x', 10)
-    .attr('y', 20)
-    .attr('fill', 'black')
-    .text(`player 1 scored: ${player1Score}, player 2 scored: ${player2Score}`);
+  // let group = canvas
+  //   .append('g')
+  //   .attr(
+  //     'transform',
+  //     `translate(${width / 2 - boxWidth / 2} ${height / 2 - boxHeight / 2})`
+  //   );
+
+  // group
+  //   .append('rect')
+  //   .attr('x', 0)
+  //   .attr('y', 0)
+  //   .attr('width', boxWidth)
+  //   .attr('height', boxHeight)
+  //   .attr('fill', 'white');
+
+  // group
+  //   .append('text')
+  //   .attr('x', 10)
+  //   .attr('y', 20)
+  //   .attr('fill', 'black')
+  //   .text(
+  //     `${playerName}, ${
+  //       playerScore === 0 ? `You got them all!` : `you missed: ${playerScore}`
+  //     }`
+  //   );
 }

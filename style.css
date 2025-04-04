@@ -35,6 +35,33 @@ body {
   font-size: 1rem;
 }
 
+#inputdiv {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+}
+
 button {
+  font-size: 1rem;
+}
+
+.endgamemodal {
+  position: relative;
+  top: 30%;
+  left: 35%;
+  width: 25%;
+  height: 25%;
+  background-color: white;
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 2rem;
+  border-radius: 5px;
+  border: 2px solid black;
   font-size: 1rem;
 }
